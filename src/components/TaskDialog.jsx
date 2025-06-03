@@ -109,7 +109,9 @@ export default function TaskDialog({ isOpen, onClose, editMode, taskToEdit }) {
               {titleErrorMessage && (
                 <p className="text-red-500 text-sm mt-3">{titleErrorMessage}</p>
               )}
-              <p className="mt-4">عناصر المهمة</p>
+              <label className="mt-4 block mb-2 text-sm font-semibold text-gray-700">
+                عناصر المهمة
+              </label>
               {items.map((item, index) => (
                 <div className="mt-4 flex justify-between items-center gap-3">
                   <div>
