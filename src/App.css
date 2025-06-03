@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@theme {
+  --color-card-purple-500: #d8cbe7;
+}
+
+.progress {
+  max-width: 200px;
+}
+
+.css-2hy7sk-MuiFormLabel-root-MuiInputLabel-root {
+  right: 0;
+  /* transform-origin: top right; */
+  /* transform: translate(0, 20px) scale(1); */
+}
+.css-1ew92b2-MuiFormLabel-root-MuiInputLabel-root {
+  right: 0 !important;
+  left: unset !important;
+  transform-origin: top right;
+  color: black !important;
+}
+.css-5h82ro-MuiInputBase-root-MuiInput-root::after {
+  border-bottom: 2px solid black !important;
+}

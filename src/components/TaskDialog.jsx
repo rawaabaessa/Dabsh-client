@@ -1,0 +1,180 @@
+import { useState, useEffect } from "react";
+import { useTasks } from "../contexts/taskContext";
+import { TextField } from "@mui/material";
+import { Button, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+
+export default function TaskDialog({ isOpen, onClose, editMode, taskToEdit }) {
+  const { addTask, updateTask } = useTasks();
+
+  const [title, setTitle] = useState("");
+  const [items, setItems] = useState([{ itemName: "", fullNumber: 1 }]);
+
+  const [titleErrorMessage, setTitleErrorMessage] = useState("");
+  const [itemErrorMessage, setItemErrorMessage] = useState("");
+
+  useEffect(() => {
+    if (editMode && taskToEdit) {
+      setTitle(taskToEdit.name);
+      setItems(
+        taskToEdit.items.map((item) => ({
+          ...item,
+        }))
+      );
+    } else {
+      setTitle("");
+      setItems([{ itemName: "", fullNumber: 1 }]);
+    }
+  }, [editMode, taskToEdit, isOpen]);
+
+  const handleSave = () => {
+    setTitleErrorMessage("");
+    setItemErrorMessage("");
+    if (!title.trim()) {
+      setTitleErrorMessage("يرجى كتابة عنوان المهمة");
+      return;
+    }
+    const invalidItem = items.find(
+      (item) => !item.itemName.trim() || item.fullNumber <= 0
+    );
+
+    if (invalidItem) {
+      setItemErrorMessage("تأكد أن كل عنصر له اسم وعدد أكبر من صفر");
+      return;
+    }
+    if (items == "") {
+      setItemErrorMessage("يرجى اضافة عناصر");
+      return;
+    }
+
+    const updatedTask = {
+      _id: taskToEdit?._id, 
+      name: title,
+      items: items.map((item) => ({
+        ...item,
+        boughtedItem: editMode ? item.boughtedItem : 0,
+      })),
+    };
+
+    if (editMode) {
+      updateTask(updatedTask);
+    } else {
+      addTask(updatedTask);
+    }
+
+    onClose();
+  };
+
+  const addItem = () => {
+    setItemErrorMessage("");
+    setItems((prev) => [...prev, { itemName: "", fullNumber: 1 }]);
+  };
+
+  const removeItem = (index) => {
+    setItemErrorMessage("");
+    const updated = [...items];
+    updated.splice(index, 1);
+    setItems(updated);
+  };
+
+  return (
+    <Dialog
+      dir="rtl"
+      open={isOpen}
+      as="div"
+      className="relative z-10 focus:outline-none"
+      onClose={onClose}
+    >
+      <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div className="flex min-h-full items-center justify-center p-4">
+          <DialogPanel
+            transition
+            className="w-full max-w-md rounded-xl bg-white shadow-md p-6 backdrop-blur-2xl duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
+          >
+            <DialogTitle as="h3" className="text-base/7 font-medium text-black">
+              {editMode ? "تعديل المهمة" : "إضافة مهمة"}
+            </DialogTitle>
+            <div className="mt-2 text-sm/6 text-black" dir="rtl">
+              <TextField
+                dir="rtl"
+                id="standard-basic"
+                label="عنوان"
+                variant="standard"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+              {titleErrorMessage && (
+                <p className="text-red-500 text-sm mt-3">{titleErrorMessage}</p>
+              )}
+              <p className="mt-4">عناصر المهمة</p>
+              {items.map((item, index) => (
+                <div className="mt-4 flex justify-between items-center">
+                  <TextField
+                    dir="rtl"
+                    id="standard-basic"
+                    label="العنوان"
+                    variant="standard"
+                    value={item.itemName}
+                    onChange={(e) => {
+                      const updated = [...items];
+                      updated[index].itemName = e.target.value;
+                      setItems(updated);
+                    }}
+                  />
+                  <TextField
+                    className="w-24"
+                    dir="rtl"
+                    id="standard-basic"
+                    min={1}
+                    label="العدد"
+                    type="number"
+                    variant="standard"
+                    value={item.fullNumber}
+                    onChange={(e) => {
+                      const updated = [...items];
+                      updated[index].fullNumber = Number(e.target.value);
+                      setItems(updated);
+                    }}
+                  />
+                  <button
+                    className="w-10 h-10 flex items-center justify-center rounded-xl border border-card-purple-500 text-card-purple-500 text-xl hover:bg-blue-100"
+                    onClick={() => removeItem(index)}
+                  >
+                    -
+                  </button>
+                </div>
+              ))}
+              {itemErrorMessage && (
+                <p className="text-red-500 text-sm mt-3">{itemErrorMessage}</p>
+              )}
+              <button
+                className="my-4 w-10 h-10 flex items-center justify-center rounded-xl border border-card-purple-500 text-card-purple-500 text-xl hover:bg-blue-100"
+                onClick={addItem}
+              >
+                +
+              </button>
+            </div>
+
+            <div className="mt-4 flex gap-4">
+              <Button
+                className="inline-flex items-center gap-2 rounded-md bg-gray-700 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-hover:bg-gray-600 data-open:bg-gray-700"
+                onClick={() => {
+                  handleSave();
+                }}
+              >
+                {editMode ? "تحديث" : "إضافة"}
+              </Button>
+              <Button
+                className="inline-flex items-center gap-2 rounded-md bg-gray-700 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-hover:bg-gray-600 data-open:bg-gray-700"
+                onClick={() => {
+                  onClose();
+                }}
+              >
+                الغاء
+              </Button>
+            </div>
+          </DialogPanel>
+        </div>
+      </div>
+    </Dialog>
+  );
+}
