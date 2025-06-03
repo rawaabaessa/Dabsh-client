@@ -60,7 +60,7 @@ function Tasks() {
           ></CircularProgressbar>
         </div>
         <button
-          className="w-full h-10 flex items-center justify-center rounded-xl border border-card-purple-500 text-card-purple-500 text-xl hover:bg-blue-100"
+          className="w-full h-10 flex items-center justify-center rounded-xl border border-card-purple-500 text-card-purple-500 text-xl hover:bg-card-purple-500 hover:text-white"
           onClick={open}
         >
           +

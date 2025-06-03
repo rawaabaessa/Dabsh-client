@@ -47,7 +47,7 @@ export default function TaskDialog({ isOpen, onClose, editMode, taskToEdit }) {
     }
 
     const updatedTask = {
-      _id: taskToEdit?._id, 
+      _id: taskToEdit?._id,
       name: title,
       items: items.map((item) => ({
         ...item,
@@ -90,53 +90,64 @@ export default function TaskDialog({ isOpen, onClose, editMode, taskToEdit }) {
             transition
             className="w-full max-w-md rounded-xl bg-white shadow-md p-6 backdrop-blur-2xl duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
           >
-            <DialogTitle as="h3" className="text-base/7 font-medium text-black">
+            <DialogTitle as="h3" className="text-base/7 font-bold text-black">
               {editMode ? "تعديل المهمة" : "إضافة مهمة"}
             </DialogTitle>
             <div className="mt-2 text-sm/6 text-black" dir="rtl">
-              <TextField
-                dir="rtl"
-                id="standard-basic"
-                label="عنوان"
-                variant="standard"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
+              <div>
+                <label className="block mb-2 text-sm font-semibold text-gray-700">
+                  العنوان
+                </label>
+                <input
+                  type="text"
+                  className="w-full rounded-xl border border-gray-300 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-card-purple-500"
+                  placeholder="فساتين"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
               {titleErrorMessage && (
                 <p className="text-red-500 text-sm mt-3">{titleErrorMessage}</p>
               )}
               <p className="mt-4">عناصر المهمة</p>
               {items.map((item, index) => (
-                <div className="mt-4 flex justify-between items-center">
-                  <TextField
-                    dir="rtl"
-                    id="standard-basic"
-                    label="العنوان"
-                    variant="standard"
-                    value={item.itemName}
-                    onChange={(e) => {
-                      const updated = [...items];
-                      updated[index].itemName = e.target.value;
-                      setItems(updated);
-                    }}
-                  />
-                  <TextField
-                    className="w-24"
-                    dir="rtl"
-                    id="standard-basic"
-                    min={1}
-                    label="العدد"
-                    type="number"
-                    variant="standard"
-                    value={item.fullNumber}
-                    onChange={(e) => {
-                      const updated = [...items];
-                      updated[index].fullNumber = Number(e.target.value);
-                      setItems(updated);
-                    }}
-                  />
+                <div className="mt-4 flex justify-between items-center gap-3">
+                  <div>
+                    <label className="block mb-2 text-sm font-semibold text-gray-700">
+                      اسم العنصر
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full rounded-xl border border-gray-300 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-card-purple-500"
+                      placeholder="فساتين"
+                      value={item.itemName}
+                      onChange={(e) => {
+                        const updated = [...items];
+                        updated[index].itemName = e.target.value;
+                        setItems(updated);
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block mb-2 text-sm font-semibold text-gray-700">
+                      العدد
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      className="w-full rounded-xl border border-gray-300 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-card-purple-500"
+                      placeholder="أدخل العدد"
+                      value={item.fullNumber}
+                      onChange={(e) => {
+                        const updated = [...items];
+                        updated[index].fullNumber = Number(e.target.value);
+                        setItems(updated);
+                      }}
+                    />
+                  </div>
                   <button
-                    className="w-10 h-10 flex items-center justify-center rounded-xl border border-card-purple-500 text-card-purple-500 text-xl hover:bg-blue-100"
+                    className="self-end w-10 h-10 flex items-center justify-center rounded-xl border border-card-purple-500 text-card-purple-500 text-xl hover:bg-blue-100"
                     onClick={() => removeItem(index)}
                   >
                     -
@@ -156,7 +167,7 @@ export default function TaskDialog({ isOpen, onClose, editMode, taskToEdit }) {
 
             <div className="mt-4 flex gap-4">
               <Button
-                className="inline-flex items-center gap-2 rounded-md bg-gray-700 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-hover:bg-gray-600 data-open:bg-gray-700"
+                className="inline-flex items-center gap-2 rounded-md bg-card-purple-500 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-open:bg-gray-700"
                 onClick={() => {
                   handleSave();
                 }}
@@ -164,7 +175,7 @@ export default function TaskDialog({ isOpen, onClose, editMode, taskToEdit }) {
                 {editMode ? "تحديث" : "إضافة"}
               </Button>
               <Button
-                className="inline-flex items-center gap-2 rounded-md bg-gray-700 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-hover:bg-gray-600 data-open:bg-gray-700"
+                className="inline-flex items-center gap-2 rounded-md bg-transparent border border-card-purple-500 text-gray-700 data-hover:bg-card-purple-500 hover:text-white px-3 py-1.5 text-sm/6 font-semibold shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-open:bg-gray-700"
                 onClick={() => {
                   onClose();
                 }}

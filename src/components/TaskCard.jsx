@@ -105,14 +105,12 @@ export default function TaskCard({ task }) {
             >
               <DialogTitle
                 as="h3"
-                className="text-base/7 font-medium text-black"
+                className="text-base/7 font-bold text-black"
               >
                 حذف مهمة
               </DialogTitle>
               <div className="mt-2 text-sm/6 text-black" dir="rtl">
-                <p className="mt-4 text-amber-800">
-                  هل انت متاكد من حذف المهمة ؟
-                </p>
+                <p className=" text-amber-800">هل انت متاكد من حذف المهمة ؟</p>
               </div>
               <div className="mt-4 flex gap-4">
                 <Button

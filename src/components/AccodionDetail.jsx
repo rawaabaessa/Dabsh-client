@@ -7,7 +7,7 @@ export default function AccordionDetail({ item, taskId }) {
   return (
     <div className="flex justify-between">
       <p>{item.itemName}</p>
-      <div className="flex justify-between gap-4">
+      <div className="flex justify-between gap-2">
         <div
           className="w-6 h-6 flex items-center justify-center rounded-full bg-card-purple-500 text-white"
           onClick={() => updateItemCount(taskId, item._id, "increment")}
@@ -15,7 +15,7 @@ export default function AccordionDetail({ item, taskId }) {
           <AddIcon fontSize="x-small" />
         </div>
 
-        <p className="w-12 text-center">
+        <p className="w-15 text-center">
           {item.fullNumber} / {item.boughtedItem}
         </p>
         <div className="w-6 h-6 flex items-center justify-center rounded-full bg-card-purple-500 text-white">
