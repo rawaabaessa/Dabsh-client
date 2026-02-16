@@ -5,9 +5,11 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import { useState, useMemo } from "react";
 import { useTasks } from "../contexts/taskContext";
 import TaskDialog from "./TaskDialog";
+import { Toaster } from "react-hot-toast";
 
 function Tasks() {
   const { tasks, loading } = useTasks();
+  const { toast } = useTasks();
 
   const calculateOverallCompletion = (tasks) => {
     let totalBought = 0;
@@ -71,6 +73,11 @@ function Tasks() {
           onClose={close}
           editMode={false}
         ></TaskDialog>
+        {
+          toast.show && (
+            <Toaster />
+          )
+        }
         <div>
           {loading ? (
             <p className="text-gray-500 text-center" dir="rtl">

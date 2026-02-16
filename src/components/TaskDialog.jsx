@@ -2,9 +2,13 @@ import { useState, useEffect } from "react";
 import { useTasks } from "../contexts/taskContext";
 import { TextField } from "@mui/material";
 import { Button, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import toast from "react-hot-toast";
+import { ThreeDots } from "react-loader-spinner";
 
 export default function TaskDialog({ isOpen, onClose, editMode, taskToEdit }) {
   const { addTask, updateTask } = useTasks();
+  const { setIsSaving, isSaving } = useTasks();
+  const { setToast } = useTasks();
 
   const [title, setTitle] = useState("");
   const [items, setItems] = useState([{ itemName: "", fullNumber: 1 }]);
@@ -18,7 +22,7 @@ export default function TaskDialog({ isOpen, onClose, editMode, taskToEdit }) {
       setItems(
         taskToEdit.items.map((item) => ({
           ...item,
-        }))
+        })),
       );
     } else {
       setTitle("");
@@ -26,7 +30,7 @@ export default function TaskDialog({ isOpen, onClose, editMode, taskToEdit }) {
     }
   }, [editMode, taskToEdit, isOpen]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setTitleErrorMessage("");
     setItemErrorMessage("");
     if (!title.trim()) {
@@ -34,7 +38,7 @@ export default function TaskDialog({ isOpen, onClose, editMode, taskToEdit }) {
       return;
     }
     const invalidItem = items.find(
-      (item) => !item.itemName.trim() || item.fullNumber <= 0
+      (item) => !item.itemName.trim() || item.fullNumber <= 0,
     );
 
     if (invalidItem) {
@@ -55,12 +59,32 @@ export default function TaskDialog({ isOpen, onClose, editMode, taskToEdit }) {
       })),
     };
 
-    if (editMode) {
-      updateTask(updatedTask);
-    } else {
-      addTask(updatedTask);
+    try {
+      setIsSaving(true);
+      if (editMode) {
+        await updateTask(updatedTask);
+        onClose();
+        setToast({
+          show: true,
+        });
+        toast.success("تمت تحديث المهمة بنجاح");
+      } else {
+        await addTask(updatedTask);
+        onClose();
+        setToast({
+          show: true,
+        });
+        toast.success("تمت اضافة المهمة بنجاح");
+      }
+      onClose();
+    } catch {
+      setToast({
+        show: true,
+      });
+      toast.error("حدث خطأ، يرجى المحاولة مرة اخرى");
+    } finally {
+      setIsSaving(false);
     }
-
     onClose();
   };
 
@@ -174,7 +198,21 @@ export default function TaskDialog({ isOpen, onClose, editMode, taskToEdit }) {
                   handleSave();
                 }}
               >
-                {editMode ? "تحديث" : "إضافة"}
+                {isSaving ? (
+                  <ThreeDots
+                    height="28"
+                    width="28"
+                    color="#ffff"
+                    ariaLabel="bars-loading"
+                    wrapperStyle={{}}
+                    wrapperClass=""
+                    visible={true}
+                  />
+                ) : editMode ? (
+                  "تحديث"
+                ) : (
+                  "إضافة"
+                )}
               </Button>
               <Button
                 className="inline-flex items-center gap-2 rounded-md bg-transparent border border-card-purple-500 text-gray-700 data-hover:bg-card-purple-500 hover:text-white px-3 py-1.5 text-sm/6 font-semibold shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-open:bg-gray-700"

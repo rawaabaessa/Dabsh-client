@@ -7,10 +7,18 @@ const TaskContext = createContext();
 export const TaskProvider = ({ children }) => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  // هنا غيرت
+  const [isSaving, setIsSaving] = useState(false);
+  const [toast, setToast] = useState({
+    show: false,
+  });
+  //
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get("https://dabsh-api.onrender.com/api/tasks");
+      const response = await axios.get(
+        "https://dabsh-api.onrender.com/api/tasks",
+      );
       setTasks(response.data);
       setLoading(false);
     } catch (error) {
@@ -42,15 +50,22 @@ export const TaskProvider = ({ children }) => {
     const updatedTask = updatedTasks.find((t) => t._id === taskId);
 
     try {
-      await axios.put(`https://dabsh-api.onrender.com/api/tasks/${taskId}`, updatedTask);
+      await axios.put(
+        `https://dabsh-api.onrender.com/api/tasks/${taskId}`,
+        updatedTask,
+      );
     } catch (error) {
       console.error("فشل في تحديث المهمة في السيرفر:", error);
     }
   };
 
   const addTask = async (newTask) => {
-    const res = await axios.post("https://dabsh-api.onrender.com/api/tasks", newTask);
-    setTasks((prev) => [...prev, res.data]);
+    const res = await axios.post(
+      "https://dabsh-api.onrender.com/api/tasks",
+      newTask,
+    );
+    // setTasks((prev) => [...prev, res.data]);
+    setTasks((prev) => [res.data, ...prev]);
   };
 
   const updateTask = async (updatedTask) => {
@@ -66,11 +81,11 @@ export const TaskProvider = ({ children }) => {
     try {
       const res = await axios.put(
         `https://dabsh-api.onrender.com/api/tasks/${sanitizedTask._id}`,
-        sanitizedTask
+        sanitizedTask,
       );
 
       setTasks((prev) =>
-        prev.map((task) => (task._id === sanitizedTask._id ? res.data : task))
+        prev.map((task) => (task._id === sanitizedTask._id ? res.data : task)),
       );
     } catch (error) {
       console.error("فشل في تحديث المهمة:", error);
@@ -100,6 +115,10 @@ export const TaskProvider = ({ children }) => {
         deleteTask,
         updateTask,
         loading,
+        setIsSaving,
+        isSaving,
+        toast,
+        setToast,
       }}
     >
       {children}

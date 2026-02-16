@@ -9,9 +9,11 @@ import { useTasks } from "../contexts/taskContext";
 import { useState } from "react";
 import TaskDialog from "./TaskDialog";
 import { Button, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import toast from "react-hot-toast";
+import { ThreeDots } from "react-loader-spinner";
 
 export default function TaskCard({ task }) {
-  const { deleteTask } = useTasks();
+  const { deleteTask, setToast, setIsSaving, isSaving } = useTasks();
   const [isEditOpen, setIsEditOpen] = useState(false);
 
   const openEdit = () => setIsEditOpen(true);
@@ -30,17 +32,36 @@ export default function TaskCard({ task }) {
   const calculateTaskCompletion = (task) => {
     const totalBought = task.items.reduce(
       (sum, item) => sum + item.boughtedItem,
-      0
+      0,
     );
     const totalFull = task.items.reduce(
       (sum, item) => sum + item.fullNumber,
-      0
+      0,
     );
     if (totalFull === 0) return 0;
     return Math.round((totalBought / totalFull) * 100);
   };
 
   const itemPercentage = calculateTaskCompletion(task);
+
+  const handleDelete = async (id) => {
+    try {
+      setIsSaving(true);
+      await deleteTask(id);
+      setToast({
+        show: true,
+      });
+      toast.success("تم حذف المهمة بنجاح");
+    } catch {
+      setToast({
+        show: true,
+      });
+      toast.error("حدث خطأ، يرجى المحاولة مرة اخرى");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <>
       <Accordion dir="rtl" className="rounded-xl">
@@ -103,10 +124,7 @@ export default function TaskCard({ task }) {
               transition
               className="w-full max-w-md rounded-xl bg-white shadow-md p-6 backdrop-blur-2xl duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
             >
-              <DialogTitle
-                as="h3"
-                className="text-base/7 font-bold text-black"
-              >
+              <DialogTitle as="h3" className="text-base/7 font-bold text-black">
                 حذف مهمة
               </DialogTitle>
               <div className="mt-2 text-sm/6 text-black" dir="rtl">
@@ -116,10 +134,22 @@ export default function TaskCard({ task }) {
                 <Button
                   className="inline-flex items-center gap-2 rounded-md bg-gray-700 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-hover:bg-gray-600 data-open:bg-gray-700"
                   onClick={() => {
-                    deleteTask(task._id);
+                    handleDelete(task._id);
                   }}
                 >
-                  حذف
+                  {isSaving ? (
+                    <ThreeDots
+                      height="28"
+                      width="28"
+                      color="#ffff"
+                      ariaLabel="bars-loading"
+                      wrapperStyle={{}}
+                      wrapperClass=""
+                      visible={true}
+                    />
+                  ) : (
+                    "حذف"
+                  )}
                 </Button>
                 <Button
                   className="inline-flex items-center gap-2 rounded-md bg-gray-700 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-hover:bg-gray-600 data-open:bg-gray-700"
